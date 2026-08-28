@@ -6,12 +6,73 @@
 //
 
 import SwiftUI
+import UIKit
+import FirebaseCore
+import FirebaseFirestore
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
+
+        let settings = Firestore.firestore().settings
+        settings.cacheSettings = PersistentCacheSettings()
+        Firestore.firestore().settings = settings
+
+        return true
+    }
+}
 
 @main
 struct Expense_TrackerApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
+    @State private var authService: AuthService
+    @State private var firestoreService: FirestoreService
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var showPrivacyOverlay = false
+
+    init() {
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+            let settings = Firestore.firestore().settings
+            settings.cacheSettings = PersistentCacheSettings()
+            Firestore.firestore().settings = settings
+        }
+
+        _authService = State(initialValue: AuthService())
+        _firestoreService = State(initialValue: FirestoreService())
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ZStack {
+                AuthGateView(
+                    authService: authService,
+                    firestoreService: firestoreService
+                )
+
+                // Privacy overlay when app is in background
+                if showPrivacyOverlay {
+                    PrivacyOverlayView()
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.15), value: showPrivacyOverlay)
+            .onChange(of: scenePhase) { _, newPhase in
+                switch newPhase {
+                case .active:
+                    showPrivacyOverlay = false
+                case .inactive, .background:
+                    showPrivacyOverlay = true
+                @unknown default:
+                    break
+                }
+            }
         }
     }
 }
