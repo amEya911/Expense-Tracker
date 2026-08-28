@@ -6,6 +6,7 @@ struct BudgetOverviewView: View {
     @State private var analyticsViewModel: AnalyticsViewModel?
     @State private var selectedTab: Int = 0 // 0 = Analytics, 1 = Budgets
     @State private var showEditBudget = false
+    @State private var showAllTimeSummary = false
 
     var body: some View {
         NavigationStack {
@@ -40,7 +41,25 @@ struct BudgetOverviewView: View {
             }
             .navigationTitle(selectedTab == 0 ? "Analytics & Trends" : "Monthly Budget")
             .toolbar {
-                if selectedTab == 1 {
+                if selectedTab == 0 {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showAllTimeSummary = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chart.bar.doc.horizontal.fill")
+                                    .font(.caption)
+                                Text("All-Time")
+                                    .font(.caption.weight(.bold))
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Color.appAccent.opacity(0.12))
+                            .foregroundStyle(Color.appAccent)
+                            .clipShape(Capsule())
+                        }
+                    }
+                } else {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             showEditBudget = true
@@ -50,6 +69,11 @@ struct BudgetOverviewView: View {
                                 .foregroundStyle(.appAccent)
                         }
                     }
+                }
+            }
+            .sheet(isPresented: $showAllTimeSummary) {
+                if let analyticsVM = analyticsViewModel {
+                    AllTimeSummarySheet(viewModel: analyticsVM)
                 }
             }
             .sheet(isPresented: $showEditBudget, onDismiss: {
@@ -95,6 +119,11 @@ struct BudgetOverviewView: View {
 
             // Spending Summary Card
             analyticsSummaryCard(aVM)
+
+            // Payment Methods Breakdown (Horizontal Bar Chart)
+            if !aVM.paymentMethodBreakdown.isEmpty {
+                paymentMethodsMonthlyCard(aVM)
+            }
 
             // Category Breakdown (Donut Chart)
             if !aVM.categoryBreakdown.isEmpty {
@@ -251,6 +280,84 @@ struct BudgetOverviewView: View {
                         }
                     }
                     .padding(.vertical, 2)
+                }
+            }
+        }
+        .padding(18)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+    }
+
+    // MARK: - Payment Methods Horizontal Bar Chart
+
+    private func paymentMethodsMonthlyCard(_ aVM: AnalyticsViewModel) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("PAYMENT METHODS")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .tracking(1)
+                    Text("Monthly Spend by Method")
+                        .font(.subheadline.weight(.semibold))
+                }
+                Spacer()
+                Image(systemName: "creditcard.fill")
+                    .foregroundStyle(Color.appAccent)
+            }
+
+            // Horizontal Bar Chart
+            Chart(aVM.paymentMethodBreakdown) { method in
+                BarMark(
+                    x: .value("Amount", NSDecimalNumber(decimal: method.amount).doubleValue),
+                    y: .value("Method", method.name)
+                )
+                .foregroundStyle(method.color.gradient)
+                .cornerRadius(6)
+                .annotation(position: .trailing, alignment: .leading) {
+                    Text(CurrencyFormatter.format(method.amount))
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .padding(.leading, 4)
+                }
+            }
+            .chartYAxis {
+                AxisMarks { _ in
+                    AxisValueLabel()
+                        .font(.caption.weight(.medium))
+                }
+            }
+            .chartXAxis(.hidden)
+            .frame(height: CGFloat(max(aVM.paymentMethodBreakdown.count * 42, 130)))
+
+            Divider()
+
+            // List Breakdown
+            VStack(spacing: 8) {
+                ForEach(aVM.paymentMethodBreakdown) { method in
+                    HStack(spacing: 10) {
+                        Image(systemName: method.icon)
+                            .font(.subheadline)
+                            .foregroundStyle(method.color)
+                            .frame(width: 24)
+
+                        Text(method.name)
+                            .font(.subheadline.weight(.medium))
+
+                        Text("(\(method.count))")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(CurrencyFormatter.format(method.amount))
+                                .font(.subheadline.weight(.semibold))
+                            Text(String(format: "%.1f%%", method.percentage))
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
         }
