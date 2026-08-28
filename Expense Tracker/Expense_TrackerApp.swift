@@ -35,6 +35,7 @@ struct Expense_TrackerApp: App {
     @State private var firestoreService: FirestoreService
     @Environment(\.scenePhase) private var scenePhase
     @State private var showPrivacyOverlay = false
+    @AppStorage("appTheme") private var appTheme: String = "system"
 
     init() {
         if FirebaseApp.app() == nil {
@@ -46,6 +47,17 @@ struct Expense_TrackerApp: App {
 
         _authService = State(initialValue: AuthService())
         _firestoreService = State(initialValue: FirestoreService())
+    }
+
+    private var activeColorScheme: ColorScheme? {
+        switch appTheme {
+        case "light":
+            return .light
+        case "dark":
+            return .dark
+        default:
+            return nil
+        }
     }
 
     var body: some Scene {
@@ -62,6 +74,7 @@ struct Expense_TrackerApp: App {
                         .transition(.opacity)
                 }
             }
+            .preferredColorScheme(activeColorScheme)
             .animation(.easeInOut(duration: 0.15), value: showPrivacyOverlay)
             .onChange(of: scenePhase) { _, newPhase in
                 switch newPhase {

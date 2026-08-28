@@ -46,17 +46,18 @@ struct BudgetOverviewView: View {
                         Button {
                             showAllTimeSummary = true
                         } label: {
-                            HStack(spacing: 4) {
+                            HStack(spacing: 5) {
                                 Image(systemName: "chart.bar.doc.horizontal.fill")
-                                    .font(.caption)
-                                Text("All-Time")
-                                    .font(.caption.weight(.bold))
+                                    .font(.subheadline)
+                                Text("All Time")
+                                    .font(.subheadline.weight(.bold))
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                            .background(Color.appAccent.opacity(0.12))
-                            .foregroundStyle(Color.appAccent)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.appAccent)
+                            .foregroundStyle(.white)
                             .clipShape(Capsule())
+                            .shadow(color: Color.appAccent.opacity(0.3), radius: 4, y: 2)
                         }
                     }
                 } else {
@@ -117,30 +118,30 @@ struct BudgetOverviewView: View {
             // Month Selector
             analyticsMonthSelector(aVM)
 
-            // Spending Summary Card
+            // 1. Spending Summary Card (Total Spent)
             analyticsSummaryCard(aVM)
 
-            // Payment Methods Breakdown (Horizontal Bar Chart)
-            if !aVM.paymentMethodBreakdown.isEmpty {
-                paymentMethodsMonthlyCard(aVM)
-            }
-
-            // Category Breakdown (Donut Chart)
+            // 2. Category Breakdown (Donut Chart)
             if !aVM.categoryBreakdown.isEmpty {
                 categoryDonutChartCard(aVM)
             }
 
-            // Daily Spending Trend (Bar Chart)
+            // 3. Daily Spending Trend (Bar Chart)
             if !aVM.expenses.isEmpty {
                 dailySpendingBarChartCard(aVM)
             }
 
-            // Day of Week Pattern
+            // 4. Payment Methods Breakdown (Horizontal Bar Chart)
+            if !aVM.paymentMethodBreakdown.isEmpty {
+                paymentMethodsMonthlyCard(aVM)
+            }
+
+            // 5. Day of Week Pattern (Spending by Week)
             if !aVM.expenses.isEmpty {
                 dayOfWeekPatternCard(aVM)
             }
 
-            // Smart Student Insights
+            // 6. Smart Student Insights
             if !aVM.expenses.isEmpty {
                 studentInsightsCard(aVM)
             }

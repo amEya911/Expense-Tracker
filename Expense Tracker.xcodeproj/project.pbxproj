@@ -10,6 +10,7 @@
 		0327A3A696926CD5A7A854BD /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 353D138C567C4745D8E821AC /* FirebaseFirestore */; };
 		60EABC2769193A8F23B90F17 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BB62916FEF47365DFDCC04BC /* FirebaseCore */; };
 		E4594EC11EADCF680A954182 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 003EB4E5900BC6BD209EF93C /* FirebaseAuth */; };
+		F60BF1B55E5E514E6E455291 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = F5FE8313EA98AF5AF2B55DA5 /* FirebaseStorage */; };
 		F624E71DB600FF7A3BAC36B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B06950A357AF84E91E70B13C /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -34,6 +35,7 @@
 				60EABC2769193A8F23B90F17 /* FirebaseCore in Frameworks */,
 				E4594EC11EADCF680A954182 /* FirebaseAuth in Frameworks */,
 				0327A3A696926CD5A7A854BD /* FirebaseFirestore in Frameworks */,
+				F60BF1B55E5E514E6E455291 /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +82,7 @@
 				BB62916FEF47365DFDCC04BC /* FirebaseCore */,
 				003EB4E5900BC6BD209EF93C /* FirebaseAuth */,
 				353D138C567C4745D8E821AC /* FirebaseFirestore */,
+				F5FE8313EA98AF5AF2B55DA5 /* FirebaseStorage */,
 			);
 			productName = "Expense Tracker";
 			productReference = 9CE759FE3041129D0066F962 /* Expense Tracker.app */;
@@ -384,6 +387,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3D1E6CBA76B14570A9B59908 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		F5FE8313EA98AF5AF2B55DA5 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3D1E6CBA76B14570A9B59908 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

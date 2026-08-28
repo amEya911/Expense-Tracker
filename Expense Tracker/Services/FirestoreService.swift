@@ -30,7 +30,7 @@ final class FirestoreService: Sendable {
     }
 
     private func userProfileDoc(_ userId: String) -> DocumentReference {
-        userDoc(userId).collection("profile").document("main")
+        userDoc(userId)
     }
 
     // MARK: - Expenses
