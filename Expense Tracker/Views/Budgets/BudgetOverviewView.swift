@@ -27,8 +27,7 @@ struct BudgetOverviewView: View {
                             if let analyticsVM = analyticsViewModel {
                                 analyticsSection(analyticsVM)
                             } else {
-                                ProgressView()
-                                    .padding(.top, 40)
+                                AnalyticsSkeletonView()
                             }
                         } else {
                             // MARK: - Budget Limits Tab

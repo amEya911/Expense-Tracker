@@ -11,8 +11,7 @@ struct TransactionListView: View {
         NavigationStack {
             Group {
                 if viewModel.isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    TransactionSkeletonView()
                 } else if viewModel.filteredExpenses.isEmpty {
                     emptyState
                 } else {

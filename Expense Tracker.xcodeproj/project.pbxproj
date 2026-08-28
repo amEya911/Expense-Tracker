@@ -11,12 +11,9 @@
 		60EABC2769193A8F23B90F17 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BB62916FEF47365DFDCC04BC /* FirebaseCore */; };
 		E4594EC11EADCF680A954182 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 003EB4E5900BC6BD209EF93C /* FirebaseAuth */; };
 		F60BF1B55E5E514E6E455291 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = F5FE8313EA98AF5AF2B55DA5 /* FirebaseStorage */; };
-		F624E71DB600FF7A3BAC36B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B06950A357AF84E91E70B13C /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXFileReference section */
 		9CE759FE3041129D0066F962 /* Expense Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expense Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B06950A357AF84E91E70B13C /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; name = "GoogleService-Info.plist"; path = "Expense Tracker/GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -47,7 +44,6 @@
 			children = (
 				9CE75A003041129D0066F962 /* Expense Tracker */,
 				9CE759FF3041129D0066F962 /* Products */,
-				B06950A357AF84E91E70B13C /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,7 +126,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F624E71DB600FF7A3BAC36B7 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +276,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Expense Tracker uses speech recognition to let you add expenses by voice.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Expense Tracker needs microphone access to transcribe your voice when adding expenses.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -316,6 +313,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Expense Tracker uses speech recognition to let you add expenses by voice.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Expense Tracker needs microphone access to transcribe your voice when adding expenses.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

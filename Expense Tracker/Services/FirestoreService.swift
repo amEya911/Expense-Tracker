@@ -179,6 +179,7 @@ final class FirestoreService: Sendable {
         try await updateCategory(category)
     }
 
+    @discardableResult
     func seedDefaultCategories(userId: String) async throws -> [ExpenseCategory] {
         guard !userId.isEmpty else { return defaultCategoriesFallback(userId: "") }
 

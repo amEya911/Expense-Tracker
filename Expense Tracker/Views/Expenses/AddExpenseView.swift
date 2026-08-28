@@ -9,6 +9,7 @@ struct AddExpenseView: View {
 
     @State private var rawAmountString: String = ""
     @State private var showSuccessAnimation = false
+    @State private var showVoiceInput = false
 
     var body: some View {
         NavigationStack {
@@ -53,12 +54,24 @@ struct AddExpenseView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(viewModel.isEditing ? "Update" : "Save") {
-                        Task { await saveExpense() }
+                    HStack(spacing: 12) {
+                        if !viewModel.isEditing {
+                            Button {
+                                showVoiceInput = true
+                            } label: {
+                                Image(systemName: "mic.fill")
+                                    .font(.body)
+                                    .foregroundStyle(Color.appAccent)
+                            }
+                        }
+
+                        Button(viewModel.isEditing ? "Update" : "Save") {
+                            Task { await saveExpense() }
+                        }
+                        .fontWeight(.semibold)
+                        .foregroundStyle(viewModel.canSave ? Color.appAccent : Color.secondary.opacity(0.4))
+                        .disabled(!viewModel.canSave || viewModel.isSaving)
                     }
-                    .fontWeight(.semibold)
-                    .foregroundStyle(viewModel.canSave ? Color.appAccent : Color.secondary.opacity(0.4))
-                    .disabled(!viewModel.canSave || viewModel.isSaving)
                 }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
@@ -91,6 +104,11 @@ struct AddExpenseView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         dismiss()
                     }
+                }
+            }
+            .sheet(isPresented: $showVoiceInput) {
+                VoiceInputView(categories: viewModel.categories) { parsed in
+                    applyVoiceResult(parsed)
                 }
             }
         }
@@ -449,6 +467,43 @@ struct AddExpenseView: View {
         isMerchantFocused = false
         isNotesFocused = false
         await viewModel.save()
+    }
+
+    private func applyVoiceResult(_ parsed: ParsedExpense) {
+        if let amount = parsed.amount {
+            let val = NSDecimalNumber(decimal: amount).doubleValue
+            if val.truncatingRemainder(dividingBy: 1) == 0 {
+                rawAmountString = String(format: "%.0f", val)
+            } else {
+                rawAmountString = String(format: "%.2f", val)
+            }
+            viewModel.amountText = rawAmountString
+        }
+
+        if let categoryName = parsed.categoryName {
+            // Match category name to available categories
+            if let match = viewModel.categories.first(where: {
+                $0.name.lowercased() == categoryName.lowercased()
+            }) {
+                viewModel.selectedCategoryId = match.id
+            }
+        }
+
+        if let merchant = parsed.merchant {
+            viewModel.merchant = merchant
+        }
+
+        if let date = parsed.date {
+            viewModel.date = date
+        }
+
+        if let method = parsed.paymentMethod {
+            viewModel.paymentMethod = method
+        }
+
+        // Give haptic feedback
+        let gen = UINotificationFeedbackGenerator()
+        gen.notificationOccurred(.success)
     }
 
     // MARK: - Success Overlay

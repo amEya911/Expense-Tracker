@@ -14,8 +14,7 @@ struct DashboardView: View {
                     monthHeader
 
                     if viewModel.isLoading {
-                        ProgressView()
-                            .padding(.top, 60)
+                        DashboardSkeletonView()
                     } else {
                         // Hero Spending & Budget Card
                         heroSpendingCard

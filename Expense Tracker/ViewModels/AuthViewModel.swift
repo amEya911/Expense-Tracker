@@ -122,7 +122,7 @@ final class AuthViewModel {
                     email: user.email ?? ""
                 )
                 try await firestoreService.saveProfile(profile)
-                try await firestoreService.seedDefaultCategories(userId: user.uid)
+                _ = try await firestoreService.seedDefaultCategories(userId: user.uid)
             }
         } catch {
             // Profile creation failed but user is authenticated, handle gracefully
