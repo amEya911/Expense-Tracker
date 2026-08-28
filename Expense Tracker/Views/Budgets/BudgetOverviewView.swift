@@ -665,7 +665,7 @@ struct EditBudgetSheet: View {
                                 HStack {
                                     Text("$")
                                         .foregroundStyle(.secondary)
-                                    TextField("—", text: Binding(
+                                    TextField("None", text: Binding(
                                         get: { viewModel.categoryLimitTexts[catId] ?? "" },
                                         set: { viewModel.categoryLimitTexts[catId] = $0 }
                                     ))

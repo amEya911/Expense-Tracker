@@ -41,7 +41,7 @@ struct MainTabView: View {
                 )
             }
 
-            // Center add button — triggers expense modal sheet
+            // Center add button: triggers expense modal sheet
             Tab("Add", systemImage: "plus.circle.fill", value: 2) {
                 Color.clear
                     .onAppear {

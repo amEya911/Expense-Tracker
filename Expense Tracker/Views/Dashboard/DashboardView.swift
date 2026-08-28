@@ -257,7 +257,7 @@ struct DashboardView: View {
                     .foregroundStyle(Color(hex: "00C48C"))
                     .clipShape(Capsule())
                 } else {
-                    Text("Card is empty — Top up to ride")
+                    Text("Card is empty: Top up to ride")
                         .font(.caption2)
                         .foregroundStyle(.white.opacity(0.7))
                 }

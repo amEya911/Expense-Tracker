@@ -4,7 +4,7 @@ import FirebaseFirestore
 struct Budget: Codable, Identifiable, Sendable {
     @DocumentID var id: String?
     let userId: String
-    var monthYear: String               // "2026-08" — partition key
+    var monthYear: String               // "2026-08" partition key
     var overallLimit: Double?           // nil means no overall budget set
     var categoryLimits: [String: Double] // categoryId -> limit amount
     var createdAt: Date

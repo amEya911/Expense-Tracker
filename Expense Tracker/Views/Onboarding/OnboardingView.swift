@@ -169,7 +169,7 @@ struct OnboardingView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 40)
 
-            Text("Leave blank to skip — you can set a budget anytime from Settings.")
+            Text("Leave blank to skip: you can set a budget anytime from Settings.")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -214,7 +214,7 @@ struct OnboardingView: View {
             onComplete()
         } catch {
             print("Onboarding save error: \(error.localizedDescription)")
-            // Complete anyway — don't block the user
+            // Complete anyway: don't block the user
             onComplete()
         }
         isSaving = false

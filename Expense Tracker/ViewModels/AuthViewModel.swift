@@ -125,7 +125,7 @@ final class AuthViewModel {
                 try await firestoreService.seedDefaultCategories(userId: user.uid)
             }
         } catch {
-            // Profile creation failed but user is authenticated — handle gracefully
+            // Profile creation failed but user is authenticated, handle gracefully
             print("Failed to create profile: \(error.localizedDescription)")
         }
     }
