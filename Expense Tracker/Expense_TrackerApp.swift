@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import AppIntents
 import FirebaseCore
 import FirebaseFirestore
 
@@ -33,9 +34,11 @@ struct Expense_TrackerApp: App {
 
     @State private var authService: AuthService
     @State private var firestoreService: FirestoreService
+    @State private var biometricManager = BiometricAuthManager.shared
     @Environment(\.scenePhase) private var scenePhase
     @State private var showPrivacyOverlay = false
     @AppStorage("appTheme") private var appTheme: String = "system"
+    @AppStorage("biometricsEnabled") private var biometricsEnabled: Bool = false
 
     init() {
         if FirebaseApp.app() == nil {
@@ -68,22 +71,42 @@ struct Expense_TrackerApp: App {
                     firestoreService: firestoreService
                 )
 
-                // Privacy overlay when app is in background
+                // Biometric lock protection
+                if biometricsEnabled && !biometricManager.isUnlocked && authService.isAuthenticated {
+                    BiometricLockView(biometricManager: biometricManager)
+                        .transition(.opacity)
+                        .zIndex(99)
+                }
+
+                // Privacy overlay when app is in background or app switcher
                 if showPrivacyOverlay {
                     PrivacyOverlayView()
                         .transition(.opacity)
+                        .zIndex(100)
                 }
             }
             .preferredColorScheme(activeColorScheme)
-            .animation(.easeInOut(duration: 0.15), value: showPrivacyOverlay)
+            .animation(.easeInOut(duration: 0.2), value: showPrivacyOverlay)
+            .animation(.easeInOut(duration: 0.2), value: biometricManager.isUnlocked)
             .onChange(of: scenePhase) { _, newPhase in
                 switch newPhase {
                 case .active:
                     showPrivacyOverlay = false
-                case .inactive, .background:
+                case .inactive:
                     showPrivacyOverlay = true
+                case .background:
+                    showPrivacyOverlay = true
+                    if biometricsEnabled {
+                        biometricManager.lock()
+                    }
                 @unknown default:
                     break
+                }
+            }
+            .onAppear {
+                ExpenseTrackerShortcuts.updateAppShortcutParameters()
+                if !biometricsEnabled {
+                    biometricManager.unlockDirectly()
                 }
             }
         }

@@ -5,6 +5,8 @@ struct DashboardView: View {
     var onAddExpense: () -> Void
 
     @State private var showPrestoTopUp = false
+    @State private var showBillSplitter = false
+    @State private var showSemesterBudget = false
 
     var body: some View {
         NavigationStack {
@@ -21,6 +23,14 @@ struct DashboardView: View {
 
                         // Dedicated PRESTO Transit Card
                         prestoTransitCard
+
+                        // Semester Burn-Rate Card (if enabled)
+                        SemesterBudgetCard(spentThisSemester: viewModel.totalSpent) {
+                            showSemesterBudget = true
+                        }
+
+                        // Student Power Tools Bar
+                        studentToolsSection
 
                         // Top Spending Categories
                         if !viewModel.categorySpending.isEmpty {
@@ -56,6 +66,14 @@ struct DashboardView: View {
                 ) {
                     Task { await viewModel.loadData() }
                 }
+            }
+            .sheet(isPresented: $showBillSplitter) {
+                BillSplitterSheet { splitAmount, description in
+                    onAddExpense()
+                }
+            }
+            .sheet(isPresented: $showSemesterBudget) {
+                SemesterBudgetSheet()
             }
             .refreshable {
                 await viewModel.loadData()
@@ -393,5 +411,57 @@ struct DashboardView: View {
         .padding(14)
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    // MARK: - Student Power Tools Bar
+
+    private var studentToolsSection: some View {
+        HStack(spacing: 12) {
+            Button {
+                showBillSplitter = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "person.2.slash")
+                        .font(.headline)
+                        .foregroundStyle(Color.appAccent)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Split Bill")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.primary)
+                        Text("Tip & e-Transfer")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+                .padding(12)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                showSemesterBudget = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "graduationcap.fill")
+                        .font(.headline)
+                        .foregroundStyle(Color(hex: "5856D6"))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Semester Plan")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.primary)
+                        Text("Term burn rate")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+                .padding(12)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .buttonStyle(.plain)
+        }
     }
 }

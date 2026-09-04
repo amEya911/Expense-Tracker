@@ -6,9 +6,15 @@ struct SettingsView: View {
     let userId: String
 
     @AppStorage("appTheme") private var appTheme: String = "system"
+    @AppStorage("biometricsEnabled") private var biometricsEnabled: Bool = false
+
     @State private var showEditProfile = false
     @State private var showEditBudget = false
+    @State private var showSemesterBudget = false
     @State private var budgetViewModel: BudgetViewModel?
+
+    @State private var exportedCSVURL: URL?
+    @State private var isExportingCSV = false
 
     var body: some View {
         NavigationStack {
@@ -59,15 +65,50 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                 }
 
-                // MARK: - Management Section
-                Section("Manage") {
-                    NavigationLink {
-                        CategoryManagementView(
-                            firestoreService: firestoreService,
-                            userId: userId
-                        )
+                // MARK: - Security Section
+                Section("Security") {
+                    Toggle(isOn: $biometricsEnabled) {
+                        HStack(spacing: 12) {
+                            Image(systemName: BiometricAuthManager.shared.biometryIcon)
+                                .foregroundStyle(Color.appAccent)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Require \(BiometricAuthManager.shared.biometryName)")
+                                    .font(.body)
+                                Text("Lock app when leaving or switching apps")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .tint(Color.appAccent)
+                    .onChange(of: biometricsEnabled) { _, isEnabled in
+                        if isEnabled {
+                            Task {
+                                let success = await BiometricAuthManager.shared.authenticate(reason: "Enable \(BiometricAuthManager.shared.biometryName) protection")
+                                if !success {
+                                    biometricsEnabled = false
+                                }
+                            }
+                        } else {
+                            BiometricAuthManager.shared.unlockDirectly()
+                        }
+                    }
+                }
+
+                // MARK: - Student Budget & Management Section
+                Section("Manage & Student Tools") {
+                    Button {
+                        showSemesterBudget = true
                     } label: {
-                        Label("Categories", systemImage: "tag.fill")
+                        HStack {
+                            Label("Academic Semester Budget", systemImage: "graduationcap.fill")
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
                     }
 
                     Button {
@@ -84,6 +125,42 @@ struct SettingsView: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                         }
+                    }
+
+                    NavigationLink {
+                        CategoryManagementView(
+                            firestoreService: firestoreService,
+                            userId: userId
+                        )
+                    } label: {
+                        Label("Categories", systemImage: "tag.fill")
+                    }
+                }
+
+                // MARK: - Data & Export Section
+                Section("Data & Export") {
+                    if let url = exportedCSVURL {
+                        ShareLink(item: url) {
+                            HStack {
+                                Label("Share / Save CSV Export", systemImage: "square.and.arrow.up")
+                                    .foregroundStyle(Color.appAccent)
+                                Spacer()
+                            }
+                        }
+                    } else {
+                        Button {
+                            Task { await exportTransactionsCSV() }
+                        } label: {
+                            HStack {
+                                Label(isExportingCSV ? "Preparing CSV..." : "Export Expenses (CSV)", systemImage: "arrow.down.doc.fill")
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if isExportingCSV {
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .disabled(isExportingCSV)
                     }
                 }
 
@@ -128,6 +205,9 @@ struct SettingsView: View {
                     EditBudgetSheet(viewModel: bVM)
                 }
             }
+            .sheet(isPresented: $showSemesterBudget) {
+                SemesterBudgetSheet()
+            }
             .task {
                 await viewModel.loadProfile()
             }
@@ -149,21 +229,33 @@ struct SettingsView: View {
                 titleVisibility: .visible
             ) {
                 Button("Delete Everything", role: .destructive) {
-                    Task { await viewModel.deleteAccount() }
+                    Task {
+                        await viewModel.deleteAccount()
+                    }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will permanently delete your account and all your financial data. This cannot be undone.")
-            }
-            .alert("Error", isPresented: .init(
-                get: { viewModel.errorMessage != nil },
-                set: { if !$0 { viewModel.errorMessage = nil } }
-            )) {
-                Button("OK") { viewModel.errorMessage = nil }
-            } message: {
-                Text(viewModel.errorMessage ?? "")
+                Text("Are you absolutely sure? All your expenses, budgets, and categories will be permanently deleted.")
             }
         }
+    }
+
+    private func exportTransactionsCSV() async {
+        isExportingCSV = true
+        do {
+            async let exps = firestoreService.getExpenses(userId: userId)
+            async let cats = firestoreService.getCategories(userId: userId)
+            let (loadedExpenses, loadedCategories) = try await (exps, cats)
+
+            if let url = CSVExportService.generateCSVFileURL(expenses: loadedExpenses, categories: loadedCategories) {
+                exportedCSVURL = url
+                let gen = UINotificationFeedbackGenerator()
+                gen.notificationOccurred(.success)
+            }
+        } catch {
+            print("Export error: \(error.localizedDescription)")
+        }
+        isExportingCSV = false
     }
 
     @ViewBuilder

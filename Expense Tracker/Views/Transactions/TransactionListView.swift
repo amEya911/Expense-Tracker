@@ -20,6 +20,21 @@ struct TransactionListView: View {
             }
             .navigationTitle("Transactions")
             .searchable(text: $viewModel.searchText, prompt: "Search by merchant, category, or notes")
+            .toolbar {
+                if !viewModel.expenses.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        ShareLink(
+                            item: CSVExportService.generateCSV(expenses: viewModel.expenses, categories: viewModel.categories),
+                            subject: Text("Expense Tracker Export"),
+                            message: Text("Here is my exported expense data from Expense Tracker.")
+                        ) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.body)
+                                .foregroundStyle(Color.appAccent)
+                        }
+                    }
+                }
+            }
             .refreshable {
                 await viewModel.loadData()
             }

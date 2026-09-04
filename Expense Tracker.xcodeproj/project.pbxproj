@@ -13,6 +13,7 @@
 		F60BF1B55E5E514E6E455291 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = F5FE8313EA98AF5AF2B55DA5 /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXFileReference section */
 		9CE759FE3041129D0066F962 /* Expense Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expense Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -270,14 +271,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 29N977QVQ7;
+				DEVELOPMENT_TEAM = 84D95PJNL9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Expense Tracker uses your camera to scan and extract expense details from receipts.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Expense Tracker uses Face ID to protect your personal financial records.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Expense Tracker needs microphone access to transcribe your voice when adding expenses.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Expense Tracker uses speech recognition to let you add expenses by voice.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Expense Tracker uses speech recognition to let you add expenses by voice.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Expense Tracker needs microphone access to transcribe your voice when adding expenses.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -307,14 +310,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 29N977QVQ7;
+				DEVELOPMENT_TEAM = 84D95PJNL9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Expense Tracker uses your camera to scan and extract expense details from receipts.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Expense Tracker uses Face ID to protect your personal financial records.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Expense Tracker needs microphone access to transcribe your voice when adding expenses.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Expense Tracker uses speech recognition to let you add expenses by voice.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Expense Tracker uses speech recognition to let you add expenses by voice.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Expense Tracker needs microphone access to transcribe your voice when adding expenses.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

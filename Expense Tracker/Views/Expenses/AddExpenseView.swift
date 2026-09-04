@@ -1,8 +1,12 @@
 import SwiftUI
+import StoreKit
 
 struct AddExpenseView: View {
     @Bindable var viewModel: ExpenseViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.requestReview) private var requestReview
+    @AppStorage("totalSavedExpensesCount") private var totalSavedExpensesCount: Int = 0
+
     @FocusState private var isAmountFocused: Bool
     @FocusState private var isMerchantFocused: Bool
     @FocusState private var isNotesFocused: Bool
@@ -10,6 +14,7 @@ struct AddExpenseView: View {
     @State private var rawAmountString: String = ""
     @State private var showSuccessAnimation = false
     @State private var showVoiceInput = false
+    @State private var showReceiptScanner = false
 
     var body: some View {
         NavigationStack {
@@ -54,8 +59,16 @@ struct AddExpenseView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    HStack(spacing: 12) {
+                    HStack(spacing: 14) {
                         if !viewModel.isEditing {
+                            Button {
+                                showReceiptScanner = true
+                            } label: {
+                                Image(systemName: "doc.viewfinder.fill")
+                                    .font(.body)
+                                    .foregroundStyle(Color.appAccent)
+                            }
+
                             Button {
                                 showVoiceInput = true
                             } label: {
@@ -98,6 +111,13 @@ struct AddExpenseView: View {
             }
             .onChange(of: viewModel.didSave) { _, didSave in
                 if didSave {
+                    totalSavedExpensesCount += 1
+                    if totalSavedExpensesCount == 5 || totalSavedExpensesCount == 20 {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            requestReview()
+                        }
+                    }
+
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                         showSuccessAnimation = true
                     }
@@ -109,6 +129,11 @@ struct AddExpenseView: View {
             .sheet(isPresented: $showVoiceInput) {
                 VoiceInputView(categories: viewModel.categories) { parsed in
                     applyVoiceResult(parsed)
+                }
+            }
+            .sheet(isPresented: $showReceiptScanner) {
+                ReceiptScannerView { scanned in
+                    applyScannedReceipt(scanned)
                 }
             }
         }
@@ -502,6 +527,44 @@ struct AddExpenseView: View {
         }
 
         // Give haptic feedback
+        let gen = UINotificationFeedbackGenerator()
+        gen.notificationOccurred(.success)
+    }
+
+    private func applyScannedReceipt(_ receipt: ScannedReceipt) {
+        if let amount = receipt.amount {
+            let val = NSDecimalNumber(decimal: amount).doubleValue
+            if val.truncatingRemainder(dividingBy: 1) == 0 {
+                rawAmountString = String(format: "%.0f", val)
+            } else {
+                rawAmountString = String(format: "%.2f", val)
+            }
+            viewModel.amountText = rawAmountString
+        }
+
+        if let merchant = receipt.merchant, !merchant.isEmpty {
+            viewModel.merchant = merchant
+
+            // Infer category based on merchant name
+            let lowerMerchant = merchant.lowercased()
+            for cat in viewModel.categories {
+                let lowerCat = cat.name.lowercased()
+                let sampleMerchants = CategorySuggestions.defaultMerchants(for: cat.name).map { $0.lowercased() }
+                if sampleMerchants.contains(where: { lowerMerchant.contains($0) || $0.contains(lowerMerchant) }) || lowerMerchant.contains(lowerCat) {
+                    viewModel.selectedCategoryId = cat.id
+                    break
+                }
+            }
+        }
+
+        if let date = receipt.date {
+            viewModel.date = date
+        }
+
+        if viewModel.paymentMethod == nil {
+            viewModel.paymentMethod = "Credit"
+        }
+
         let gen = UINotificationFeedbackGenerator()
         gen.notificationOccurred(.success)
     }
